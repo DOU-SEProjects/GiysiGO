@@ -23,4 +23,5 @@ public interface ICatalogRepository
     // 5. Dükkan Teklifleri (Fiyatlar - Dükkana veya Ürüne göre filtrelenebilir)
     Task<IReadOnlyList<StoreOffering>> GetStoreOfferingsAsync(Guid? storeId = null, Guid? productTypeServiceId = null, CancellationToken cancellationToken = default);
     Task<StoreOffering?> GetStoreOfferingByIdAsync(Guid id, CancellationToken cancellationToken = default);
-}
+Task<IReadOnlyList<ProductType>> GetProductTypesPagedAsync(Guid? categoryId, int pageNumber, int pageSize, CancellationToken cancellationToken = default);
+    Task<Guid> AddCategoryAsync(string name, string? description, int displayOrder = 0, CancellationToken cancellationToken = default);}

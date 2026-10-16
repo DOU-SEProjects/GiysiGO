@@ -217,3 +217,56 @@ BEGIN
     WHERE id = @Id AND delete_date IS NULL;
 END;
 GO
+-- 11. Sayfalamalı Ürün Tipleri Listesi
+CREATE OR ALTER PROCEDURE catalog.usp_GetProductTypesPaged
+    @CategoryId UNIQUEIDENTIFIER = NULL,
+    @PageNumber INT = 1,
+    @PageSize INT = 20
+AS
+BEGIN
+    SET NOCOUNT ON;
+
+    SELECT 
+        id AS Id,
+        category_id AS CategoryId,
+        name AS Name,
+        description AS Description,
+        icon_url AS IconUrl,
+        display_order AS DisplayOrder,
+        is_active AS IsActive,
+        create_date AS CreateDate,
+        update_date AS UpdateDate,
+        delete_date AS DeleteDate
+    FROM catalog.product_types
+    WHERE (@CategoryId IS NULL OR category_id = @CategoryId)
+      AND is_active = 1 
+      AND delete_date IS NULL
+    ORDER BY display_order ASC, name ASC
+    OFFSET (@PageNumber - 1) * @PageSize ROWS
+    FETCH NEXT @PageSize ROWS ONLY;
+END;
+GO
+
+-- 12. Kategori Ekleme (Insert GUID Result-Set Kuralına Uygun)
+CREATE OR ALTER PROCEDURE catalog.usp_InsertCategory
+    @Name NVARCHAR(100),
+    @Description NVARCHAR(500) = NULL,
+    @DisplayOrder INT = 0
+AS
+BEGIN
+    SET NOCOUNT ON;
+
+    DECLARE @NewId UNIQUEIDENTIFIER = NEWID();
+    DECLARE @NowUtc DATETIME2 = SYSUTCDATETIME();
+
+    INSERT INTO catalog.product_categories (
+        id, name, description, display_order, is_active, create_date
+    )
+    VALUES (
+        @NewId, @Name, @Description, @DisplayOrder, 1, @NowUtc
+    );
+
+    -- insert GUID result-set kuralı:
+    SELECT @NewId AS Id;
+END;
+GO

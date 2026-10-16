@@ -160,4 +160,36 @@ public sealed class CatalogRepository : ICatalogRepository
 
         return await _dbConnection.QuerySingleOrDefaultAsync<StoreOffering>(command);
     }
+    public async Task<IReadOnlyList<ProductType>> GetProductTypesPagedAsync(Guid? categoryId, int pageNumber, int pageSize, CancellationToken cancellationToken = default)
+    {
+        var parameters = new DynamicParameters();
+        parameters.Add("@CategoryId", categoryId, DbType.Guid);
+        parameters.Add("@PageNumber", pageNumber, DbType.Int32);
+        parameters.Add("@PageSize", pageSize, DbType.Int32);
+
+        var command = new CommandDefinition(
+            commandText: "catalog.usp_GetProductTypesPaged",
+            parameters: parameters,
+            commandType: CommandType.StoredProcedure,
+            cancellationToken: cancellationToken);
+
+        var result = await _dbConnection.QueryAsync<ProductType>(command);
+        return result.AsList();
+    }
+
+    public async Task<Guid> AddCategoryAsync(string name, string? description, int displayOrder = 0, CancellationToken cancellationToken = default)
+    {
+        var parameters = new DynamicParameters();
+        parameters.Add("@Name", name, DbType.String);
+        parameters.Add("@Description", description, DbType.String);
+        parameters.Add("@DisplayOrder", displayOrder, DbType.Int32);
+
+        var command = new CommandDefinition(
+            commandText: "catalog.usp_InsertCategory",
+            parameters: parameters,
+            commandType: CommandType.StoredProcedure,
+            cancellationToken: cancellationToken);
+
+        return await _dbConnection.ExecuteScalarAsync<Guid>(command);
+    }
 }
