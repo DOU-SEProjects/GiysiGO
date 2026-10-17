@@ -10,12 +10,31 @@
 /src/Modules/Catalog/ @sdnrkaleli
 /src/Modules/Ordering/ @AhmetEfe0
 /src/Modules/Operations/ @selincellkk
+/src/Modules/Ordering/IntegrationEvents/ @AhmetEfe0 @PnterNN
+/src/Modules/Operations/IntegrationEvents/ @selincellkk @PnterNN
 
 /tests/Modules/Identity/ @PnterNN
 /tests/Modules/Catalog/ @sdnrkaleli
 /tests/Modules/Ordering/ @AhmetEfe0
 /tests/Modules/Operations/ @selincellkk
 /tests/API/GiysiGo.API.IntegrationTests/ @PnterNN
+/tests/Contracts/ @PnterNN @AhmetEfe0 @sdnrkaleli @selincellkk
+/docs/MODULE-CONTRACTS.md @PnterNN @AhmetEfe0 @sdnrkaleli @selincellkk
+/docs/WORKFLOW-CONTRACTS.md @PnterNN @AhmetEfe0 @sdnrkaleli @selincellkk
+/docs/openapi/ @PnterNN @AhmetEfe0 @sdnrkaleli @selincellkk
+
+/src/API/GiysiGo.API/Controllers/Identity/ @PnterNN
+/src/API/GiysiGo.API/Controllers/Catalog/ @sdnrkaleli
+/src/API/GiysiGo.API/Controllers/Ordering/ @AhmetEfe0
+/src/API/GiysiGo.API/Controllers/Operations/ @selincellkk
+
+/apps/customer/ @PnterNN
+/apps/customer/lib/features/catalog/ @sdnrkaleli
+/apps/customer/lib/features/ordering/ @AhmetEfe0
+/apps/store/ @sdnrkaleli
+/apps/store/src/features/identity/ @PnterNN
+/apps/store/src/features/ordering/ @AhmetEfe0
+/apps/store/src/features/operations/ @selincellkk
 
 /database/GiysiGo.Database/identity/ @PnterNN
 /database/GiysiGo.Database/catalog/ @sdnrkaleli

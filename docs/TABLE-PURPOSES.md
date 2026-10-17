@@ -1,5 +1,12 @@
 # GiysiGO tablo rehberi
 
+Modüllerin bu tablolara erişirken kullandığı public arayüzler
+[modül sözleşmelerinde](MODULE-CONTRACTS.md), aktör ve izin verilen geçişler
+[operasyon sözleşmesinde](WORKFLOW-CONTRACTS.md) tanımlıdır. Şemada iptal/yeniden
+atama için alan bulunması, o komutun MVP'de etkin olduğu anlamına gelmez. Ürün
+inceleme reddinin telafi/iade kararı henüz açık iş kararıdır; müşteri teklifinin
+tam reddi ise tanımlanmış tam sipariş iade akışıdır.
+
 Bu rehber SQL projesindeki **39 mevcut tabloyu** açıklar: Identity 9, Catalog 6, Ordering 14, Operations 9, building_blocks 1. Amaç, bir geliştiricinin bir kaydın neden ayrı tabloda tutulduğunu, hangi işlemde oluşturulduğunu ve hangi işlemde okunduğunu SQL dosyalarını tek tek çözmeden anlayabilmesidir. Kesin sütun türleri, CHECK/UNIQUE/FK ve indeksler için kaynak dosyalar database/GiysiGo.Database altındadır. Bu belge tasarlanan akışı anlatır; modül iş akışlarının tamamının kodlandığı anlamına gelmez.
 
 Bütün tablolarda GUID id ile create_date, update_date ve delete_date bulunur. Zaman alanları uygulamada UTC kabul edilir. delete_date genel yumuşak silme altyapısıdır; sipariş, ödeme, teklif ve geçmiş kayıtları normal kullanıcı CRUD'u ile silinmemelidir. is_active veya status ayrı bir kavramdır: kayıt veritabanında dururken hizmete/işleme açık olup olmadığını belirtir. FK'ler referans bütünlüğünü sağlar; adres sahipliği, dükkân kapsamı, toplam tutar ve izin verilen durum geçişleri ayrıca uygulama transaction'ında doğrulanır.

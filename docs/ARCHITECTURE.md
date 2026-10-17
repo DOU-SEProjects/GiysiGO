@@ -23,9 +23,14 @@ GiysiGO is intentionally implemented as a **Modular Monolith**:
 
 For 4-person collaboration, use per-module feature branches:
 
-- `feature/identity/*`
-- `feature/catalog/*`
-- `feature/ordering/*`
-- `feature/operations/*`
+- `feature/identity`
+- `feature/catalog`
+- `feature/ordering`
+- `feature/operations`
+
+Shared contract work uses a separate branch, such as `feature/shared-contracts`.
+Public interfaces, API ownership and transaction rules are defined in
+`docs/MODULE-CONTRACTS.md`; lifecycle and event rules are in
+`docs/WORKFLOW-CONTRACTS.md`.
 
 See `docs/BRANCHING.md` for team workflow rules.
