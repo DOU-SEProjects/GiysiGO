@@ -24,6 +24,9 @@ Repository kullanan entity'lerin beş temel stored procedure sözleşmesi ve iş
 
 ## Başlangıç ve doğrulama
 
+Identity #6 veri erişiminin kapsamı, repository davranışları ve ayrı LocalDB ile
+gerçek prosedür testleri [IDENTITY-DATA.md](IDENTITY-DATA.md) içinde açıklanır.
+
 ```powershell
 dotnet test tests/API/GiysiGo.API.IntegrationTests/GiysiGo.API.IntegrationTests.csproj --configuration Release
 dotnet test tests/Modules/Identity/GiysiGo.Modules.Identity.Tests.csproj --configuration Release
