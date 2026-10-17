@@ -21,10 +21,12 @@ jobs:
       - name: Restore
         run: |
           dotnet restore tests/API/GiysiGo.API.IntegrationTests/GiysiGo.API.IntegrationTests.csproj
+          dotnet restore tests/Contracts/GiysiGo.Contracts.Tests.csproj
           for project in tests/Modules/*/*.csproj; do dotnet restore "$project"; done
       - name: Test API and modules
         run: |
           dotnet test tests/API/GiysiGo.API.IntegrationTests/GiysiGo.API.IntegrationTests.csproj --no-restore --configuration Release
+          dotnet test tests/Contracts/GiysiGo.Contracts.Tests.csproj --no-restore --configuration Release
           for project in tests/Modules/*/*.csproj; do dotnet test "$project" --no-restore --configuration Release; done
   sql-project:
     runs-on: windows-2022

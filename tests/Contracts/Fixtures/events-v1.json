@@ -1,0 +1,111 @@
+[
+  {
+    "EventId": "11111111-1111-1111-1111-111111111111",
+    "OccurredAtUtc": "2026-10-17T12:00:00Z",
+    "OrderId": "22222222-2222-2222-2222-222222222222",
+    "StoreId": "33333333-3333-3333-3333-333333333333",
+    "PickupWindowStartUtc": "2026-10-18T09:00:00Z",
+    "PickupWindowEndUtc": "2026-10-18T10:00:00Z",
+    "EventType": "ordering.order_placed.v1"
+  },
+  {
+    "EventId": "11111111-1111-1111-1111-111111111111",
+    "OccurredAtUtc": "2026-10-17T12:00:00Z",
+    "OrderId": "22222222-2222-2222-2222-222222222222",
+    "EventType": "ordering.order_ready_for_delivery.v1"
+  },
+  {
+    "EventId": "11111111-1111-1111-1111-111111111111",
+    "OccurredAtUtc": "2026-10-17T12:00:00Z",
+    "OrderId": "22222222-2222-2222-2222-222222222222",
+    "QuoteId": "44444444-4444-4444-4444-444444444444",
+    "EventType": "ordering.payment_succeeded.v1"
+  },
+  {
+    "EventId": "11111111-1111-1111-1111-111111111111",
+    "OccurredAtUtc": "2026-10-17T12:00:00Z",
+    "OrderId": "22222222-2222-2222-2222-222222222222",
+    "QuoteId": "44444444-4444-4444-4444-444444444444",
+    "EventType": "ordering.quote_rejected.v1"
+  },
+  {
+    "EventId": "11111111-1111-1111-1111-111111111111",
+    "OccurredAtUtc": "2026-10-17T12:00:00Z",
+    "OrderId": "22222222-2222-2222-2222-222222222222",
+    "EventType": "operations.pickup_at_store.v1"
+  },
+  {
+    "EventId": "11111111-1111-1111-1111-111111111111",
+    "OccurredAtUtc": "2026-10-17T12:00:00Z",
+    "OrderId": "22222222-2222-2222-2222-222222222222",
+    "EventType": "operations.all_items_inspected.v1"
+  },
+  {
+    "EventId": "11111111-1111-1111-1111-111111111111",
+    "OccurredAtUtc": "2026-10-17T12:00:00Z",
+    "OrderId": "22222222-2222-2222-2222-222222222222",
+    "EventType": "operations.all_work_completed.v1"
+  },
+  {
+    "EventId": "11111111-1111-1111-1111-111111111111",
+    "OccurredAtUtc": "2026-10-17T12:00:00Z",
+    "OrderId": "22222222-2222-2222-2222-222222222222",
+    "TaskId": "55555555-5555-5555-5555-555555555555",
+    "EventType": "operations.delivery_completed.v1"
+  },
+  {
+    "EventId": "11111111-1111-1111-1111-111111111111",
+    "OccurredAtUtc": "2026-10-17T12:00:00Z",
+    "OrderId": "22222222-2222-2222-2222-222222222222",
+    "TaskId": "55555555-5555-5555-5555-555555555555",
+    "TaskType": "CUSTOMER_PICKUP",
+    "EventType": "operations.delivery_task_assigned.v1"
+  },
+  {
+    "EventId": "11111111-1111-1111-1111-111111111111",
+    "OccurredAtUtc": "2026-10-17T12:00:00Z",
+    "OrderId": "22222222-2222-2222-2222-222222222222",
+    "TaskId": "55555555-5555-5555-5555-555555555555",
+    "TaskType": "CUSTOMER_DELIVERY",
+    "EventType": "operations.delivery_task_assigned.v1"
+  },
+  {
+    "EventId": "11111111-1111-1111-1111-111111111111",
+    "OccurredAtUtc": "2026-10-17T12:00:00Z",
+    "OrderId": "22222222-2222-2222-2222-222222222222",
+    "TaskId": "55555555-5555-5555-5555-555555555555",
+    "TaskType": "REJECTED_ORDER_RETURN",
+    "EventType": "operations.delivery_task_assigned.v1"
+  },
+  {
+    "EventId": "11111111-1111-1111-1111-111111111111",
+    "OccurredAtUtc": "2026-10-17T12:00:00Z",
+    "OrderId": "22222222-2222-2222-2222-222222222222",
+    "TaskId": "55555555-5555-5555-5555-555555555555",
+    "TaskType": "CUSTOMER_PICKUP",
+    "EventType": "operations.delivery_task_started.v1"
+  },
+  {
+    "EventId": "11111111-1111-1111-1111-111111111111",
+    "OccurredAtUtc": "2026-10-17T12:00:00Z",
+    "OrderId": "22222222-2222-2222-2222-222222222222",
+    "TaskId": "55555555-5555-5555-5555-555555555555",
+    "TaskType": "CUSTOMER_DELIVERY",
+    "EventType": "operations.delivery_task_started.v1"
+  },
+  {
+    "EventId": "11111111-1111-1111-1111-111111111111",
+    "OccurredAtUtc": "2026-10-17T12:00:00Z",
+    "OrderId": "22222222-2222-2222-2222-222222222222",
+    "TaskId": "55555555-5555-5555-5555-555555555555",
+    "TaskType": "REJECTED_ORDER_RETURN",
+    "EventType": "operations.delivery_task_started.v1"
+  },
+  {
+    "EventId": "11111111-1111-1111-1111-111111111111",
+    "OccurredAtUtc": "2026-10-17T12:00:00Z",
+    "OrderId": "22222222-2222-2222-2222-222222222222",
+    "TaskId": "55555555-5555-5555-5555-555555555555",
+    "EventType": "operations.return_completed.v1"
+  }
+]
