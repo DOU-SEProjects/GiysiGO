@@ -35,10 +35,10 @@ CorporateMembership kullanıcıya şirkette rol verir; StoreAssignment kullanıc
 
 | Tablo | Önemli alanlar ve kurallar |
 | --- | --- |
-| User | Id, Email, PasswordHash, IsActive, CreatedAt; e-posta benzersiz |
+| User | Id, Email, PasswordHash, IsActive, CreateDate; e-posta benzersiz |
 | Role | Id, Code, Name, Scope, IsActive; Scope = Global, Corporate veya Store; Code benzersiz |
 | Permission | Id, Code, Description, IsActive; Code benzersiz, uygulama tarafından tanımlanır |
-| RolePermission | RoleId, PermissionId; birleşik anahtar, tekrarlı atama olamaz |
+| RolePermission | Id GUID birincil anahtar; RoleId, PermissionId çifti delete_date IS NULL filtreli benzersiz indeksle korunur |
 | UserRole | UserId, RoleId; yalnızca Global kapsamlı roller atanır |
 | CorporateMembership | UserId, CorporateId, RoleId, IsActive; yalnızca Corporate kapsamlı roller atanır |
 | StoreAssignment | UserId, StoreId, RoleId, IsActive; yalnızca Store kapsamlı roller atanır |
@@ -159,12 +159,12 @@ Sipariş oluşturulurken adres, dükkânın etkinliği, hizmet bölgesi ve büt�
 - Cart: CustomerId, StoreId, AddressId, PickupWindowStart, PickupWindowEnd, Status, Version. Alım aralığı başlangıcı bitişten önce olmalıdır.
 - CartItem: CartId, ProductTypeId, CustomerNote, CustomerMeasurement; her kayıt bir fiziksel ürün. Ölçülü ürünlerde müşteri ölçüsü tahmini tutar içindir.
 - CartItemService: CartItemId, StoreOfferingId; aynı ürüne aynı kombinasyon tekrar eklenemez.
-- CartItemPhoto: CartItemId, StorageKey, PhotoType, CreatedAt. Fotoğrafın kendisi dosya depolamada tutulur.
-- Order: CustomerId, StoreId, PickupWindowStart, PickupWindowEnd, Status, EstimatedTotal, Currency, Version, CreatedAt. Seçilen alım aralığı siparişe kopyalanır.
+- CartItemPhoto: CartItemId, StorageKey, PhotoType, CreateDate. Fotoğrafın kendisi dosya depolamada tutulur.
+- Order: CustomerId, StoreId, PickupWindowStart, PickupWindowEnd, Status, EstimatedTotal, Currency, Version, CreateDate. Seçilen alım aralığı siparişe kopyalanır.
 - OrderAddressSnapshot: OrderId benzersiz; sipariş anındaki adres metni, koordinatlar ve teslimat iletişim bilgileri. Sonradan adres düzenlenmesi siparişi etkilemez.
 - OrderItem: OrderId, ProductTypeId, ProductTypeNameSnapshot, CustomerNote, CustomerMeasurement, VerifiedMeasurement, TrackingCode, InspectionStatus. TrackingCode benzersizdir; doğrulanmış ölçü kesin teklifte kullanılır.
 - OrderItemService: OrderItemId, ProductTypeServiceId, ServiceNameSnapshot, EstimatedUnitPrice, PriceUnitSnapshot, EstimatedQuantity, EstimatedPrice, Status. Tahmini tutarın nasıl hesaplandığı korunur.
-- OrderItemPhoto: OrderItemId, StorageKey, PhotoType, CreatedAt. Sipariş sonrası değişmeyen fotoğraf referansı.
+- OrderItemPhoto: OrderItemId, StorageKey, PhotoType, CreateDate. Sipariş sonrası değişmeyen fotoğraf referansı.
 
 Sipariş oluşturulurken sepet kalemleri, hizmetler, fotoğraf referansları, adres ve tahmini fiyatlar siparişe aktarılır. Fotoğraflar sipariş oluşunca müşterinin sepet düzenlemesiyle değiştirilemez; sipariş fotoğraf referansları ayrıca kalıcılaştırılır. Bir sepet en fazla bir sipariş oluşturur. Checkout isteği tekrarlandığında ikinci sipariş oluşmaması için benzersiz kaynak sepet kimliği ve idempotency anahtarı kullanılır.
 
@@ -174,9 +174,9 @@ Dükkân değiştirilirken mevcut sepet sessizce başka dükkâna taşınmaz; m�
 
 - ItemInspection her ürün için kabul/red sonucunu, personeli, açıklamayı ve kontrol zamanını saklar.
 - InspectionPhoto incelemedeki ürün durumunu belgeler.
-- PriceQuote: OrderId, Revision, Status, Currency, TotalAmount, CreatedAt, ExpiresAt, CustomerDecisionAt, DecisionByUserId.
+- PriceQuote: OrderId, Revision, Status, Currency, TotalAmount, CreateDate, ExpiresAt, CustomerDecisionAt, DecisionByUserId.
 - PriceQuoteLine: PriceQuoteId, OrderItemServiceId, ServiceNameSnapshot, UnitPrice, PriceUnit, Quantity, Amount, Explanation. Ölçülü hizmetlerde `Amount = UnitPrice × Quantity`; elle belirlenen kesin fiyat varsa gerekçe saklanır.
-- QuoteApprovalHistory: PriceQuoteId, Action (Submitted/Approved/Rejected/Published), ActorUserId, Reason, CreatedAt. Dükkân içi onay geçmişi saklanır.
+- QuoteApprovalHistory: PriceQuoteId, Action (Submitted/Approved/Rejected/Published), ActorUserId, Reason, CreateDate. Dükkân içi onay geçmişi saklanır.
 - Toplama ve teslimat ücretleri varsa teklif üzerinde ayrı tutar olarak gösterilir; toplam bunları da kapsar.
 
 Dükkân bütün ürünleri incelemeden teklif taslağını onaya gönderemez. `quote.prepare` sahibi taslağı kaydeder; `quote.approve` sahibi toplamı onaylayıp müşteriye yayımlar. İki yetki aynı kullanıcıda bulunabilir; iki ayrı kişinin onayı istenirse ayrıca görev ayrılığı kuralı eklenir. `quote.approve` yetkisi olmayan personel teklifi yayımlayamaz. MVP'de kabul edilmeyen ürün varsa siparişin tamamının geri dönüşe yönlendirilmesi önerilir; bu istisna kuralı ayrıca kesinleştirilecektir. Teklif, kabul edilen bütün hizmet kalemlerini ve bütün ücretleri içerir.
@@ -199,7 +199,7 @@ Teklif reddi:
 | --- | --- |
 | CourierProfile | Id, UserId nullable, DisplayName, IsMock, IsActive, VehicleType, CapacityUnits, Latitude, Longitude, MaxTaskRadiusKm; mock kurye için UserId boş olabilir |
 | CourierAvailability | Id, CourierId, StartsAt, EndsAt, Status; çalışma/müsaitlik aralığı, başlangıç bitişten önce |
-| DeliveryTask | Id, OrderId, Type, Status, OriginAddressSnapshot, OriginLatitude, OriginLongitude, DestinationAddressSnapshot, DestinationLatitude, DestinationLongitude, RequestedWindowStart, RequestedWindowEnd, RequiredCapacityUnits, CreatedAt; Type = CustomerPickup, CustomerDelivery veya RejectedOrderReturn |
+| DeliveryTask | Id, OrderId, Type, Status, OriginAddressSnapshot, OriginLatitude, OriginLongitude, DestinationAddressSnapshot, DestinationLatitude, DestinationLongitude, RequestedWindowStart, RequestedWindowEnd, RequiredCapacityUnits, CreateDate; Type = CustomerPickup, CustomerDelivery veya RejectedOrderReturn |
 | DeliveryAssignment | Id, DeliveryTaskId, CourierId, Status, AssignedAt, UnassignedAt, AssignmentReason, DistanceKm; yeniden atama geçmişi, görev başına en fazla bir etkin atama |
 | DeliveryEvent | Id, DeliveryTaskId, EventType, Source, ActorUserId nullable, OccurredAt, Note; mock durum ilerletmeleri de denetlenebilir |
 
@@ -212,7 +212,7 @@ Kurye profili Operations'a aittir. İleride kurye paneli açıldığında gerçe
 1. Sipariş oluşturulunca seçilen alım zaman aralığıyla `CustomerPickup` görevi açılır ve atama denenir. Teklif reddedilirse `RejectedOrderReturn`, ürünler hazır olunca `CustomerDelivery` görevi açılır; bu görevlerin teslimat zaman aralığı ayrıca belirlenir. Aynı seçim kuralı her görev için yeniden çalışır.
 2. Etkin, görevin **tam zaman aralığında** müsait, kapasitesi yeterli ve görevin başlangıç noktasına `MaxTaskRadiusKm` içinde olan kuryeler adaydır. Zaman aralığıyla çakışan etkin görevlerin yükü kapasite hesabından düşülür; bugün tamamlanmış veya başka saatteki görevler düşülmez. MVP'de kapasite birimi siparişteki fiziksel ürün adedidir; büyük ev tekstili gibi ürünler gelince bu kural değişebilir.
 3. Adaylar başlangıç noktasına uzaklık, etkin görev sayısı ve CourierId sırasıyla seçilir. Son bağlayıcı alan testlerde tutarlı sonuç sağlar. MVP mesafesi kuş uçuşudur.
-4. Atama bir transaction içinde yapılır; aynı kuryenin aynı zaman aralığındaki kapasitesi ve görevin etkin ataması eşzamanlı isteklerde yeniden kontrol edilir. Görev başına tek etkin atamayı filtered/partial unique index korur. Kurye kapasitesi toplamı için ayrıca kurye satırı üzerinde kilit veya eşdeğer serileştirme gerekir; yalnızca görev unique index'i kapasite aşımını engellemez.
+4. Atama bir transaction içinde yapılır; aynı kuryenin aynı zaman aralığındaki kapasitesi ve görevin etkin ataması eşzamanlı isteklerde yeniden kontrol edilir. Görev başına tek etkin atamayı filtreli benzersiz indeks korur. Kurye kapasitesi toplamı için ayrıca kurye satırı üzerinde kilit veya eşdeğer serileştirme gerekir; yalnızca görev unique index'i kapasite aşımını engellemez.
 5. Aday yoksa görev `PendingAssignment` kalır ve dükkân panelinde görünür; müşteri ekranında kurye atanmış denmez. Kurye müsaitliği değiştiğinde veya yetkili kişi yeniden denediğinde atama tekrarlanır.
 
 İlk deneme başarılı olsa bile kurye ataması teslim alma gerçekleşti anlamına gelmez. `PickedUp`, `AtStore`, `OutForDelivery` ve `Delivered` için mock olaylar ayrı komutlarla üretilir; kaynak `Mock` olarak kaydedilir. Alım görevi `AtStore`, dönüş görevi `Returned`, teslim görevi `Delivered` olunca tamamlanır ve ilgili rezervasyon serbest kalır. İptal/yeniden atama da eski rezervasyonu kapatır. Gerçek kurye paneli geldiğinde aynı geçişleri kurye uygulaması üretir. Aynı kurye gidiş ve dönüşe zorunlu atanmaz. Dükkân panelindeki mock geçiş komutları yalnızca yetkili kullanıcıya ve demo/test ortamına açılır; otomatik zamanlayıcı siparişi kendiliğinden teslim edilmiş saymaz.
@@ -229,7 +229,7 @@ Migration'dan ayrı, yalnızca geliştirme/test ortamında çalışan idempotent
 
 Minimum anlamlı testler: en yakın uygun kurye seçilir; yakın kurye kapasitesizse ikinci kurye seçilir; vardiya dışında veya meşgul kurye seçilmez; hiç aday yoksa görev bekler; iki eşzamanlı görev aynı kapasiteyi aşamaz; tekrar gelen atama isteği ikinci etkin atama yaratmaz; müşteri teklifini reddedince dönüş görevi ayrı atanır; teslimat olayı gelmeden sipariş Delivered olmaz. Seed kayıtları ve otomatik testler veritabanı motoru ile backend iskeleti kesinleşince eklenir.
 
-PaymentAttempt: OrderId, PriceQuoteId, Amount, Currency, Provider, ProviderPaymentId, IdempotencyKey, Status, CreatedAt. Her deneme ayrı kayıttır. Tekrarlanan ödeme bildirimi aynı tahsilatı ikinci kez işlemez. İşleme başlama şartı, onaylanan teklif ile tutarı ve para birimi eşleşen doğrulanmış başarılı ödemedir. İstemcideki ödeme başarılı ekranı tek başına yeterli değildir.
+PaymentAttempt: OrderId, PriceQuoteId, Amount, Currency, Provider, ProviderPaymentId, IdempotencyKey, Status, CreateDate. Her deneme ayrı kayıttır. Tekrarlanan ödeme bildirimi aynı tahsilatı ikinci kez işlemez. İşleme başlama şartı, onaylanan teklif ile tutarı ve para birimi eşleşen doğrulanmış başarılı ödemedir. İstemcideki ödeme başarılı ekranı tek başına yeterli değildir.
 
 ItemWork her ürün hizmetinin işlem durumunu saklar. Sipariş ancak gerekli bütün hizmetler tamamlandığında teslimata hazır olur. OrderStatusHistory ve ItemWorkHistory durum, zaman, işlemi yapan kullanıcı ve açıklamayı kaydeder.
 
@@ -237,7 +237,7 @@ Kart numarası ve CVV tutulmaz. Ödeme sağlayıcısı entegrasyonu Ordering iç
 
 ## Veri bütünlüğü ve uygulanacak sınırlar
 
-- Para alanlarında decimal/numeric kullanılır; float kullanılmaz. MVP için tek para birimi TRY önerilir.
+- Para alanlarında decimal/numeric kullanılır; float kullanılmaz. MVP para birimi mevcut SQL CHECK kısıtlarıyla TRY olarak sınırlandırılmıştır.
 - Fiyatlar negatif, hizmet yarıçapı sıfır veya negatif olamaz; koordinatlar geçerli aralıkta olmalıdır.
 - Siparişteki bütün ürün hizmetleri siparişin dükkânına ve ürün tipine uygun olmalıdır.
 - Müşteri yalnızca kendi adresi, sepeti, siparişi ve teklif kararı üzerinde işlem yapabilir.
@@ -246,8 +246,8 @@ Kart numarası ve CVV tutulmaz. Ödeme sağlayıcısı entegrasyonu Ordering iç
 - Teklifin dükkân onayı, müşterinin kabulü, ödeme bildirimi ve kurye ataması arasındaki yarışlar transaction, unique constraint ve sürüm kontrolüyle yönetilir.
 - Modüller arası önemli olaylar transaction içinde Outbox'a yazılarak kayıp ödeme ve durum olayları önlenir. Outbox altyapı tablosudur, ayrı iş modülü değildir. Tüketiciler tekrarlanan olaylara dayanıklı olmalıdır.
 
-## Liste geldiğinde kesinleştirilecekler
+## Katalog taslağında kesinleştirilecekler
 
 Terzi girişindeki 16 işlem ürün tiplerine eşleştirilecek. `[x]` işaretinin zorunluluk anlamı, perde ek hizmetlerinin fiyat birimi, büyük boy/taşlı ürünlerde olası çift ücretler ve yastık malzemesi doğrulanacak. Zorunlu fotoğraf türleri, ölçü yuvarlama kuralı ve diğer ölçülü ürünler de kesin katalog seed'inden önce belirlenecek.
 
-Uygulamadan önce veritabanı motoru, ürün tipi hiyerarşisinin derinliği, iade taşıma ücreti, teklif/ödeme zaman aşımı, dükkânın ürünü kabul etmemesi ve işlem sonrası başarısız teslimat kuralları netleştirilecek. İlk sürümde müşteri ve dükkân yönetim panelleri geliştirilecek; mock kurye verisiyle otomatik atama test edilecek. Kurye paneli, canlı konum, mesajlaşma, kampanya ve rota optimizasyonu temel akışa eklenmeyecek.
+Veritabanı motoru MSSQL olarak seçilmiştir. İlgili akışlar uygulanmadan önce ürün tipi hiyerarşisinin derinliği, iade taşıma ücreti, teklif/ödeme zaman aşımı, dükkânın ürünü kabul etmemesi ve işlem sonrası başarısız teslimat kuralları netleştirilecek. İlk sürümde müşteri ve dükkân yönetim panelleri geliştirilecek; mock kurye verisiyle otomatik atama test edilecek. Kurye paneli, canlı konum, mesajlaşma, kampanya ve rota optimizasyonu temel akışa eklenmeyecek.
