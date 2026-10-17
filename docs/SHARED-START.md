@@ -1,5 +1,27 @@
 # Dört modül için ortak başlangıç
 
+## Main durum özeti
+
+17 Ekim 2026 tarihinde `5fe320e` main commit'i üzerinden doğrulandı:
+
+- API host, ortak taban sınıflar, dört modülün proje bağlantıları ve DI girişleri var.
+- MSSQL projesinde 39 tablo ve outbox için dört stored procedure var.
+- Public contract arayüzleri ve sekiz integration event tipi var; iş akışı
+  implementasyonları ve event handler'ları henüz yok.
+- Modüllerin iş modelleri/repository'leri, JWT/refresh, gerçek permission kontrolü
+  ve müşteri/dükkân uygulamaları bu referans commit'te uygulanmış değil.
+- Mevcut testler API health ve modül referans sınırlarını doğruluyor. CI ayrıca
+  DACPAC derliyor; bu kontroller gerçek iş akışı/DB entegrasyon testi yerine geçmez.
+- Açık PR #41–#44 bu durum özetine tamamlanmış iş olarak dahil edilmedi.
+- Bilinen şema işi: courier_profiles.user_id üzerindeki nullable UNIQUE,
+  birden fazla NULL mock kurye kaydını engelliyor. Filtreli benzersiz indeks
+  düzeltmesi ve mock seed #12 kapsamındadır; çoklu mock kurye henüz hazır değildir.
+
+Bu tarihli özet özellikler main'e birleştikçe ilgili PR'da güncellenmelidir.
+Belge amaçları ve güncelleme kuralı [dokümantasyon rehberindedir](README.md).
+
+## Modül sahipliği
+
 | Modül | Sahip | C# alanı | SQL alanı | Test projesi |
 | --- | --- | --- | --- | --- |
 | Identity | @PnterNN | `src/Modules/Identity` | `identity` | `tests/Modules/Identity` |

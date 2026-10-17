@@ -1,6 +1,6 @@
 # GiysiGO dört kişilik geliştirme planı
 
-Bu plan mevcut boş repodan başlar. Backend ASP.NET Core ve .NET 10, veritabanı Microsoft SQL Server (MSSQL), veri erişimi Dapper, mimari modüler monolittir. Tek API uygulaması ve dört iş modülü vardır. Müşteri ekranı için mevcut ticari dokümandaki Flutter, dükkân paneli için React + TypeScript temel alınır. MVP'de bu iki arayüz yapılır; kurye paneli yerine gerçek atama algoritması mock kurye verileriyle çalışır. `database/GiysiGo.Database/GiysiGo.Database.sqlproj` ilişkisel şemanın düzenlenebilir kaynağıdır.
+Bu belge dört modülün hedef iş dağılımını ve kabul ölçütlerini anlatır; tamamlanan işler listesi değildir. Ortak iskelet main içinde kurulmuştur; tarihli uygulama durumu SHARED-START.md içinde tutulur. Backend ASP.NET Core ve .NET 10, veritabanı Microsoft SQL Server (MSSQL), veri erişimi Dapper, mimari modüler monolittir. Tek API uygulaması ve dört iş modülü vardır. Müşteri ekranı için mevcut ticari dokümandaki Flutter, dükkân paneli için React + TypeScript temel alınır. MVP'de bu iki arayüz yapılır; kurye paneli yerine gerçek atama algoritması mock kurye verileriyle çalışır. `database/GiysiGo.Database/GiysiGo.Database.sqlproj` ilişkisel şemanın düzenlenebilir kaynağıdır.
 
 Modül sahipleri: Identity @PnterNN, Catalog @sdnrkaleli, Ordering @AhmetEfe0, Operations @selincellkk. Derlenebilir proje iskeleti, ortak contract'lar ve mevcut sınırlar `docs/SHARED-START.md` dosyasında açıklanır.
 
@@ -10,16 +10,16 @@ Modül sahipleri: Identity @PnterNN, Catalog @sdnrkaleli, Ordering @AhmetEfe0, O
 2. API host, ortak altyapı, CI ve kök yapılandırma değişiklikleri en az bir başka ekip üyesinin incelemesinden geçer. `main` dalına doğrudan gönderim yapılmaz. Branch adları repodaki `docs/BRANCHING.md` kuralına uyar.
 3. Her modül kendi MSSQL şemasına (`identity`, `catalog`, `ordering`, `operations`) ve SQL proje klasörüne sahiptir. `building_blocks` outbox tablosu ortak altyapıdır. Tablolar, indeksler ve prosedürler SQL projesinde düzenlenir; DACPAC yayınlama script'i uygulanmadan önce incelenir. Veri taşıma gerektiren özel değişiklikler numaralı SQL script'lerinde tutulur.
 4. Ortak başlangıç: `.NET 10` solution, MSSQL SQL projesi, Dapper/SqlClient, API host, health endpoint, OpenAPI ve Problem Details hazırdır. `ApiControllerBase`, `GenericCrudControllerBase<TEntity>`, `EntityBase<TId>`, `IRepository<TEntity>` ve `RepositoryBase<TEntity>` ortak tabandır. Dört modül projesi, permission arayüzü, transaction/outbox yazıcısı ve dağıtıcısı ile test projeleri bağlandı. JWT uygulaması Identity sahibindedir. Olay handler'ları ve otomatik dağıtıcı çalıştırması modül uygulamasıyla tamamlanır. CI API ve modül testlerini, ayrıca SQL DACPAC derlemesini kontrol eder.
-5. Kod üretmeden önce dört karar yazılı hale getirilir: `[x]` hizmet kaldırılabilir mi; perde tadilat fiyatı adet mi m² mi; “Sadece Terzi” 16 işlemin ürün eşleşmeleri; reddedilen siparişin geri taşıma ücreti. Karar gelmeyen kombinasyonlar canlı katalogda pasif kalır.
+5. İlgili iş kuralı veya canlı seed uygulanmadan önce dört karar yazılı hale getirilir; bağımsız altyapı işleri bu kararları beklemez: `[x]` hizmet kaldırılabilir mi; perde tadilat fiyatı adet mi m² mi; “Sadece Terzi” 16 işlemin ürün eşleşmeleri; reddedilen siparişin geri taşıma ücreti. Karar gelmeyen kombinasyonlar canlı katalogda pasif kalır.
 6. Müşteri için `apps/customer` altında Flutter, dükkân için `apps/store` altında React + TypeScript açılır. Her iki istemci aynı REST API/OpenAPI sözleşmesini kullanır. Kişi 1 Flutter giriş/oturum iskeletini, kişi 2 React panel kabuğunu kurar; diğerleri kendi ekranlarını bu iskeletlere ekler.
 
 ## Kişi 1 — Identity ve uygulama iskeleti
 
-**Sahip olduğu veriler:** `identity.users`, `roles`, `permissions`, `role_permissions`, `user_roles`, `corporates`, `corporate_memberships`, `store_assignments`, `customer_addresses`. Ortak host ve CI kurulumunun ilk PR'ını da açar.
+**Sahip olduğu veriler:** `identity.users`, `roles`, `permissions`, `role_permissions`, `user_roles`, `corporates`, `corporate_memberships`, `store_assignments`, `customer_addresses`. Ortak host ve CI altyapısının bakımını da koordine eder.
 
-**İlk işler:** Hazır solution/API host'a Identity modülünün Domain, Application, Infrastructure ve IntegrationEvents projelerini bağla; diğer modül projeleri kendi sahiplerince eklenir. Identity Dapper repository'leri ve modüle ait SQL prosedürlerini, parola hashleme, oturum açma/yenileme, kullanıcı profili ve adres CRUD'unu yaz. `Customer`, `CorporateOwner`, `StoreManager`, `StoreStaff`, `PlatformAdmin` rollerini ve permission kodlarını seed et. Bir kullanıcı birden fazla dükkânda farklı rol alabilsin.
+**İlk işler:** Dört modülün Domain, Application, Infrastructure ve IntegrationEvents projeleri solution/API iskeletine zaten bağlıdır; bu bağlantıları yeniden oluşturma. Identity Dapper repository'leri ve modüle ait SQL prosedürlerini, parola hashleme, oturum açma/yenileme, kullanıcı profili ve adres CRUD'unu yaz. `Customer`, `CorporateOwner`, `StoreManager`, `StoreStaff`, `PlatformAdmin` rollerini ve permission kodlarını seed et. Bir kullanıcı birden fazla dükkânda farklı rol alabilsin.
 
-**API ve contract:** `POST /auth/register`, `POST /auth/login`, `POST /auth/refresh`, `GET/POST/PUT/DELETE /me/addresses`, şirket ve personel atama endpoint'leri. Diğer modüllere `ICurrentUser`, `IAuthorizationService` ve adres okuma contract'ı ver. Dükkân kapsamını her istekte sunucuda doğrula; sadece UI butonunu gizlemek yeterli değildir.
+**API ve contract:** `POST /auth/register`, `POST /auth/login`, `POST /auth/refresh`, `GET/POST/PUT/DELETE /me/addresses`, şirket ve personel atama endpoint'leri. Diğer modüllere `ICurrentUser`, `IPermissionChecker` ve adres okuma contract'ı ver. Dükkân kapsamını her istekte sunucuda doğrula; sadece UI butonunu gizlemek yeterli değildir.
 
 **Ekran işi:** Flutter uygulama iskeleti, müşteri kayıt/giriş, adres listesi/ekleme; React dükkân panelinde oturum ve yetkili şirket/dükkân seçimi için ortak kimlik bileşenleri.
 
@@ -31,7 +31,7 @@ Modül sahipleri: Identity @PnterNN, Catalog @sdnrkaleli, Ordering @AhmetEfe0, O
 
 **İlk işler:** Catalog Dapper repository'lerini ve SQL prosedürlerini oluştur. Beş kategori, 48 ürün tipi ve doğrulanan hizmet/fiyat kombinasyonları için idempotent seed yaz. Platform yöneticisi katalog oluşturabilir; dükkân sahibi sadece mevcut kombinasyonları etkinleştirip kendi fiyatını belirleyebilir. Store açma, adres/koordinat ve hizmet yarıçapı yönetimini ekle.
 
-**API ve contract:** `GET /catalog/categories`, `GET /catalog/product-types`, `GET /stores?addressId=...&serviceIds=...`, `GET /stores/{id}/offerings`, dükkân için offering/fiyat yönetimi endpoint'leri. Ordering'e `IStoreCatalogReader` benzeri bir okuma contract'ı ver: mağaza aktif mi, ürün-hizmet o mağazada aktif mi, geçerli birim fiyat nedir? Adres mesafesi ve filtreleme tekrar checkout'ta doğrulanmalı.
+**API ve contract:** `GET /catalog/categories`, `GET /catalog/product-types`, `GET /stores?addressId=...&serviceIds=...`, `GET /stores/{id}/offerings`, dükkân için offering/fiyat yönetimi endpoint'leri. Ordering'e mevcut `IStoreCatalogReader` okuma contract'ını uygula: mağaza aktif mi, ürün-hizmet o mağazada aktif mi, geçerli birim fiyat nedir? Adres mesafesi ve filtreleme tekrar checkout'ta doğrulanmalı.
 
 **Ekran işi:** React dükkân paneli iskeleti ve hizmet açma/kapama/fiyat düzenleme ekranı. Flutter'da müşterinin adresine göre dükkân listesi, hizmet filtreleri ve dükkân detayındaki ürün/hizmet/fiyat görünümü.
 
@@ -67,7 +67,7 @@ Modül sahipleri: Identity @PnterNN, Catalog @sdnrkaleli, Ordering @AhmetEfe0, O
 
 ## Birleştirme sırası ve ortak uçtan uca kontrol
 
-Modüller arası ilk sözleşmeler aşağıdaki kadar küçük tutulur. Her mesaj `eventId`, `occurredAt` ve ilgili ID'leri taşır; tüketici `eventId` ile tekrar gelen olayı ikinci kez uygulamaz. Kaynak modül olayını kendi değişikliğiyle aynı transaction içinde outbox'a yazar.
+Modüller arası ilk sözleşmeler aşağıdaki kadar küçük tutulur. Her mesaj `EventId`, `OccurredAtUtc` ve ilgili ID'leri taşır; tüketici `eventId` ile tekrar gelen olayı ikinci kez uygulamaz. Kaynak modül olayını kendi değişikliğiyle aynı transaction içinde outbox'a yazar.
 
 | Olay | Üreten → Tüketen | Sonuç |
 | --- | --- | --- |
@@ -80,7 +80,7 @@ Modüller arası ilk sözleşmeler aşağıdaki kadar küçük tutulur. Her mesa
 | `OrderReadyForDelivery(orderId)` | Ordering → Operations | Geri teslimat görevi açılır |
 | `DeliveryCompleted(orderId, taskId)` | Operations → Ordering | Sipariş Delivered olur |
 
-Event yalnızca ID ve gerekli snapshot alanlarını taşır. Başka modülün tablosunu doğrudan okuma ihtiyacı varsa önce public query contract tanımlanır. Bu isimler ilk PR'da dört kişi tarafından sabitlenir; sonradan sözleşme değişirse ilgili iki modülün testleri birlikte güncellenir.
+Event yalnızca ID ve gerekli snapshot alanlarını taşır. Başka modülün tablosunu doğrudan okuma ihtiyacı varsa önce public query contract tanımlanır. Sekiz olay tipi IntegrationEvents projelerinde tanımlıdır. Tablodaki adlar akış özetidir; tam payload ve sürümlü EventType için kaynak .cs dosyaları esas alınır. Handler implementasyonları ayrı işlerdir. Sözleşme değişirse ilgili iki modülün testleri birlikte güncellenir.
 
 | Sıra | Çıktı | Bağımlılık |
 | --- | --- | --- |
